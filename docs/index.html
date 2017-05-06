@@ -1,0 +1,251 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+	<head>
+		<meta name="the digital machine" content="Charles Eidsness' Notes" />
+		<meta name="Keywords" content="Signal Integritty, eispice, High Speed Digital Design" />
+		<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+		<meta name="Distribution" content="Global" />
+		<meta name="Author" content="Charles Eidsness" />
+		<meta name="Robots" content="index,follow" />
+		<link rel="stylesheet" href="default.css" type="text/css" />
+		<title>the digital machine</title>
+	</head>
+	<body>
+		<div id="wrap">
+			<div id="header">
+				<h1 id="logo">digital<span class="orange">machine</span></h1>
+				<h2 id="slogan">py2port: Two-Port Analysis Tool</h2>
+			</div>
+			<div id="content-wrap">
+				<div id="main">
+					<h2>
+						py2port
+					</h2>
+					<p>
+						Py2port is a tool for performing two-port and one-port analysis on linear circuits. It was developed for analyzing PCB Power-Distribution-Systems and lossy-transmission lines but can be used as a more general purpose simulation tool.
+					</p>
+					<h2>
+						Latest Release
+					</h2>
+					<p>
+						Added phase to the forward and reverse gain plots, cleaned up some of the many, many spelling mistakes, and improved the ferrite example so that it calculates all of the filter characteristics, not just impedance.
+					</p>
+					<h2>
+						Installation
+					</h2>
+					<p>
+						For Linux users download the source code: <a href="tools/py2port-1.2.tar.bz2">py2port-1.2</a>. Uncompress it "tar xvjf py2port-x.x.x.tar.bz2" and install "sudo ./setup.py install"
+					</p>
+					<p>
+						For Windows users download the self-installing executable: <a href="tools/py2port-1.2.win32.exe">py2port-1.2</a>, double-click to install.
+					</p>
+					<h2>
+						Dependencies
+					</h2>
+					<p>
+						<a href="http://www.python.org/">Python</a><br/>
+						<a href="http://matplotlib.sourceforge.net">matplotlib</a><br/>
+						<a href="http://numpy.scipy.org">numpy</a><br/>
+					</p>
+					<h2>
+						Help
+					</h2>
+					<p>
+						Py2port has extensive built-in documentation (docstrings). You can use the <a href="http://docs.python.org/lib/module-pydoc.html">pydoc</a> tool or the help command in python to access it.
+					<h2>
+						Examples
+					</h2>
+					<p>
+						The following are a few examples that demonstrate the primary intended usage and capabilities of py2port:
+					</p>
+					<h3>
+						PRBS Script
+					</h3>
+					<p>
+					<pre><code>
+#!/usr/bin/python
+"""
+PRBS driving a Lossy T-Line.
+"""
+
+import py2port
+
+# Input waveform
+vi = py2port.PRBS(bits=50, v1=-1, v2=1, tb='10ns', tr='1ns', tj='100ps')
+
+# Transmission Line (approx 100Ohms) with Source Termination
+cct = py2port.Series(py2port.R('100Ohms'))
+cct += py2port.W(10, 6.35011e-7, 5.10343e-11, 0.0, 0.0, 0.0, 0.0)
+vo = vi >> cct
+
+# Plot the Results
+vi.plotVEye('PRBS In')
+vo.plotVEye('PRBS Out')
+vi.plotI('PRBS In')
+
+# Show the plot
+py2port.plot.show()
+					</code></pre>
+					</p>
+					<h3>
+						PRBS Result
+					</h3>
+					<p>
+						<a href="images/py2port.prbs.volt.png">
+							<img src="images/py2port.prbs.volt.png" alt="PRBS Voltage" width="525"/>
+						</a>
+					</p>
+					<p>
+						<a href="images/py2port.prbs.amp.png">
+							<img src="images/py2port.prbs.amp.png" alt="PRBS Current" width="525"/>
+						</a>
+					</p>
+					<h3>
+						Power-Distribution-System Script
+					</h3>
+					<p>
+					<pre><code>
+#!/usr/bin/python
+"""
+Impedance of a Power Distribution System from the perspective of a Device.
+Includes two types of bypass capacitors, PCB plane impedance, via
+inductance, and device pin parasitics, and one device decoupling.
+                             ___     ___
+    .--------o--------o-----|___|----UUU----o----o
+    |        |        |      Rpin   Lpin    |
+    |        |        |                     |
+   --- Zp   --- Clf  --- Chf               ---
+   ---      ---      ---                   ---Cdie
+    |        |        |                     |
+    |        |        |      ___     ___    |
+    '--------o--------o-----|___|----UUU----o----o
+                             Rpin   Lpin
+"""
+
+import py2port
+
+
+# High Frequency Bypass including mounting inductance
+Chf = py2port.Cb(c='100nF', esl='0.5nH', esr='0.039')
+Lhf_via = py2port.Lvia('10mil', '62mil', '20mil')
+Lhf_mount = py2port.L('1nH') # Esitmate of extra mounnting L
+Chf = (Chf*Lhf_via*Lhf_mount) # Put them all in parallel
+
+# Low. Frequency Bypass including mounting inductance
+Clf = py2port.Cb(c='12uF', esl='1nH', esr='0.045')
+Llf_via = py2port.Lvia('10mil', '62mil', '20mil')
+Llf_mount = py2port.L('3nH') # Esitmate of extra mounnting L
+Clf = (Clf*Llf_via*Llf_mount) # Put them all in parallel
+
+# PCB Parallel Plane Impedance
+Zp = py2port.Cp(x='1in', y='1in', X='20in', Y='10in', h='2mil')
+
+# Put them all in parallel
+Zpds = Zp/(Clf//2)/(Chf//10)
+
+# Pin Paracitics
+LRpin = py2port.R('0.003') * py2port.L('0.5nH')
+Cdie = py2port.C('10pF')
+
+# Put it all together
+Zpds = (Zpds * LRpin**2)/Cdie
+
+# Plot the result
+Zpds.plotZ(py2port.LogF('10kHz', '1GHz', 100), 'PDS Example')
+
+# Show the plot
+py2port.plot.show()
+					</code></pre>
+					</p>
+					<h3>
+						Power-Distribution-System Result
+					</h3>
+					<p>
+						<a href="images/py2port.pds.png">
+							<img src="images/py2port.pds.png" alt="PDS Impedance" width="525"/>
+						</a>
+					</p>
+					<h3>
+						Ferrite Based PI-Filter Script
+					</h3>
+					<p>
+					<pre><code>
+#!/usr/bin/python
+"""
+Gain of Ferrite Based Pi-Filter from the perspective of a Device
+
+                                ___
+  .----------o----------o------|___|---o------------------o
+  |          |          |      Zbead   |          |
+  |          '          |              |          |
+ --- Plane  --- Clf    --- Chf*2      --- Clf    --- Chf*2
+ ---        ---        ---            ---        ---
+  |          |          |              |          |
+  |          |          |              |          |
+  '----------o----------o--------------o----------o-------o
+"""
+
+import py2port
+import numpy
+
+# Ferrite Bead Model
+F = numpy.array([0.0001, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40,
+                50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900,
+                1000, 2000])*1e6
+R = [0.35, 0.035, 5, 20, 40, 50, 55, 65, 80, 95, 100, 200, 250, 310,
+                355, 400, 450, 475, 500, 540, 700, 750, 770, 755, 750, 725, 700,
+                675, 670, 400]
+X = [0, 40, 50, 80, 100, 110, 120, 140, 145, 150, 155, 220, 250, 275,
+                280, 285, 280, 275, 265, 255, 160, 60, -10, -60, -100, -175, -225,
+                -250, -275, -285]
+Zbead = py2port.Lb(F, R, X)
+
+# High Frequency Bypass including mounting inductance
+Chf = py2port.Cb(c='100nF', esl='0.5nH', esr='0.039')
+Lhf_via = py2port.Lvia('10mil', '62mil', '20mil')
+Lhf_mount = py2port.L('1nH') # Esitmate of extra mounnting L
+Chf = (Chf*Lhf_via*Lhf_mount) # Put them all in parallel
+
+# Low. Frequency Bypass including mounting inductance
+Clf = py2port.Cb(c='12uF', esl='1nH', esr='0.045')
+Llf_via = py2port.Lvia('10mil', '62mil', '20mil')
+Llf_mount = py2port.L('3nH') # Esitmate of extra mounnting L
+Clf = (Clf*Llf_via*Llf_mount) # Put them all in parallel
+
+# PCB Parallel Plane Impedance
+Zp = py2port.Cp(x='1in', y='1in', X='20in', Y='10in', h='2mil')
+
+# Create Two-Port Elements for the structurse on the left
+# and right of the Bead.
+Aleft = py2port.Shunt(Zp/Clf/(Chf//2))
+Aright = py2port.Shunt(Clf/(Chf//2))
+
+# Two-Port Element for the Bead
+Abead = py2port.Series(Zbead)
+
+# Connect them all together
+Afilter = Aleft + Abead + Aright
+
+# Plot the result
+Afilter.plotGf(py2port.LogF('10kHz', '1GHz', 100), 'Pi-Filter Example')
+Afilter.plotGr(py2port.LogF('10kHz', '1GHz', 100), 'Pi-Filter Example')
+Afilter.plotZin(py2port.LogF('10kHz', '1GHz', 100), 'Pi-Filter Example')
+Afilter.plotZout(py2port.LogF('10kHz', '1GHz', 100), 'Pi-Filter Example')
+
+# Show the plots
+py2port.plot.show()
+					</code></pre>
+					</p>
+					<h3>
+						Ferrite Based PI-Filter Result
+					</h3>
+					<p>
+						<a href="images/py2port.prbs.pi.png">
+							<img src="images/py2port.pi.png" alt="Pi-Filter Impedance" width="525"/>
+						</a>
+					</p>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>
