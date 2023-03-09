@@ -28,7 +28,7 @@ capacitor - returns the closest standard capacitor value
 
 """
 
-import units
+from . import units
 import math
 
 def res(value, tol=1):
@@ -58,7 +58,7 @@ def res(value, tol=1):
 		N = 12
 		figs = 0
 	else:
-		raise RuntimeError, 'Tolearnce must be 1%, 2%, 5%, or 10%'
+		raise RuntimeError('Tolearnce must be 1%, 2%, 5%, or 10%')
 		
 	value = units.float(value)
 	dec = (math.floor(math.log10(value))-1)
@@ -90,5 +90,5 @@ if __name__ == '__main__':
 	
 	import doctest
 	doctest.testmod(verbose=False)
-	print 'Testing Complete'
+	print('Testing Complete')
 	

@@ -27,7 +27,7 @@ LogFuency -- An array of LogFuency values.
 
 """
 
-import units
+from . import units
 import numpy
 
 class Freq:
@@ -77,4 +77,4 @@ if __name__ == '__main__':
 	
 	import doctest
 	doctest.testmod(verbose=False)
-	print 'Testing Complete'
+	print('Testing Complete')

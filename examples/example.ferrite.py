@@ -1,5 +1,5 @@
 #!/usr/bin/python
-"""  
+"""
 Gain of Ferrite Based Pi-Filter from the perspective of a Device
 
                                 ___
@@ -17,14 +17,14 @@ import py2port
 import numpy
 
 # Ferrite Bead Model
-F = numpy.array([0.0001, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40, 
-		50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900, 
+F = numpy.array([0.0001, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 20, 30, 40,
+		50, 60, 70, 80, 90, 100, 200, 300, 400, 500, 600, 700, 800, 900,
 		1000, 2000])*1e6
-R = [0.35, 0.035, 5, 20, 40, 50, 55, 65, 80, 95, 100, 200, 250, 310, 
-		355, 400, 450, 475, 500, 540, 700, 750, 770, 755, 750, 725, 700, 
+R = [0.35, 0.035, 5, 20, 40, 50, 55, 65, 80, 95, 100, 200, 250, 310,
+		355, 400, 450, 475, 500, 540, 700, 750, 770, 755, 750, 725, 700,
 		675, 670, 400]
-X = [0, 40, 50, 80, 100, 110, 120, 140, 145, 150, 155, 220, 250, 275, 
-		280, 285, 280, 275, 265, 255, 160, 60, -10, -60, -100, -175, -225, 
+X = [0, 40, 50, 80, 100, 110, 120, 140, 145, 150, 155, 220, 250, 275,
+		280, 285, 280, 275, 265, 255, 160, 60, -10, -60, -100, -175, -225,
 		-250, -275, -285]
 Zbead = py2port.Lb(F, R, X)
 
@@ -43,7 +43,7 @@ Clf = (Clf*Llf_via*Llf_mount) # Put them all in parallel
 # PCB Parallel Plane Impedance
 Zp = py2port.Cp(x='1in', y='1in', X='20in', Y='10in', h='2mil')
 
-# Create Two-Port Elements for the structurse on the left
+# Create Two-Port Elements for the structures on the left
 # and right of the Bead.
 Aleft = py2port.Shunt(Zp/Clf/(Chf//2))
 Aright = py2port.Shunt(Clf/(Chf//2))

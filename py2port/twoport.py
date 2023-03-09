@@ -48,10 +48,10 @@ T -- Lossless T-Line Model
 
 """
 
-import oneport
-import units
-import freq
-from plot import *
+from . import oneport
+from . import units
+from . import freq
+from .plot import *
 
 import numpy
 import numpy.linalg
@@ -457,5 +457,5 @@ if __name__ == '__main__':
 	
 	import doctest
 	doctest.testmod(verbose=False)
-	print 'Testing Complete'
+	print('Testing Complete')
 	plot.show()

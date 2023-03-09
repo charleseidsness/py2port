@@ -44,8 +44,8 @@ plot -- response plotting untilities
 
 """
 
-from twoport import *
-from oneport import *
-from waveform import *
-from freq import *
-from plot import *
+from .twoport import *
+from .oneport import *
+from .waveform import *
+from .freq import *
+from .plot import *

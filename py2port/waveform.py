@@ -57,11 +57,11 @@ import scipy.special
 import pylab
 import random
 
-import units
-from plot import *
-import oneport
-import twoport
-import freq
+from . import units
+from .plot import *
+from . import oneport
+from . import twoport
+from . import freq
 
 def _rfft(time, data):
 	ts = time[1] - time[0]
@@ -106,7 +106,7 @@ class Waveform:
 			have to be exact
 		"""
 		if len(time) != len(voltage):
-			raise RunetimeError, 'Time and voltage arrays must be same size'
+			raise RunetimeError('Time and voltage arrays must be same size')
 		self.time = time
 		self.voltage = voltage
 		self.current = numpy.zeros(len(time))
@@ -348,5 +348,5 @@ if __name__ == '__main__':
 	
 	import doctest
 	doctest.testmod(verbose=False)
-	print 'Testing Complete'
+	print('Testing Complete')
 	plot.show()	
