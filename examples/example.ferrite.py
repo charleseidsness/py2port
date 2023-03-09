@@ -31,13 +31,13 @@ Zbead = py2port.Lb(F, R, X)
 # High Frequency Bypass including mounting inductance
 Chf = py2port.Cb(c='100nF', esl='0.5nH', esr='0.039')
 Lhf_via = py2port.Lvia('10mil', '62mil', '20mil')
-Lhf_mount = py2port.L('1nH') # Esitmate of extra mounnting L
+Lhf_mount = py2port.L('1nH') # Estimate of extra mounting L
 Chf = (Chf*Lhf_via*Lhf_mount) # Put them all in parallel
 
 # Low. Frequency Bypass including mounting inductance
 Clf = py2port.Cb(c='12uF', esl='1nH', esr='0.045')
 Llf_via = py2port.Lvia('10mil', '62mil', '20mil')
-Llf_mount = py2port.L('3nH') # Esitmate of extra mounnting L
+Llf_mount = py2port.L('3nH') # Estimate of extra mounting L
 Clf = (Clf*Llf_via*Llf_mount) # Put them all in parallel
 
 # PCB Parallel Plane Impedance
