@@ -1,14 +1,17 @@
 #!/usr/bin/python
 
-from distutils.core import setup
+from setuptools import setup
+from setuptools import find_packages
 
-setup(name = 'py2port',
-	version = '1.1',
-	description = 'Two-Port Linear Circuit Analysis',
-	author = 'Charles Eidsness',
-	author_email = 'charles@thedigitalmachine.net',
-	url = 'http://www.thedigitalmachine.net/py2port.html',
-	license = "GPL",
-	packages=[''],
-	extra_path = 'py2port')
+
+setup(
+        name = 'py2port',
+        version = '2.0',
+        description = 'Two-Port Linear Circuit Analysis',
+        author = 'Charles Eidsness',
+        author_email = 'charles@ccxtechnologies.com',
+        license = "GPL",
+        packages=find_packages(),
+        install_requires=['matplotlib', 'numpy']
+        )
 

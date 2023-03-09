@@ -1,2 +1,3 @@
 To install:
-sudo ./setup.py install
+cd py2port
+pip install .
