@@ -171,7 +171,7 @@ class OnePort:
 		"""
 		return InLine(self, a)
 
-	def __div__(self, a):
+	def __truediv__(self, a):
 		"""
 		Connect two Devices in Parallel.
 		"""
